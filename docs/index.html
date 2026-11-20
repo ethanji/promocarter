@@ -1,0 +1,904 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PromoCarter Docs</title>
+<style>
+:root{--bg:#fff;--ink:#16181d;--mute:#6b7280;--line:#e5e7eb;--brand:#4f46e5;--code:#f3f4f6}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1115;--ink:#e8eaee;--mute:#9aa3b2;--line:#2a2f38;--brand:#818cf8;--code:#1b1f27}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 system-ui,sans-serif;display:flex}
+aside{position:sticky;top:0;height:100vh;overflow:auto;width:260px;flex:none;border-right:1px solid var(--line);padding:18px 14px}
+aside h1{font-size:16px;color:var(--brand);margin:0 0 12px}aside a{display:block;color:var(--ink);text-decoration:none;padding:3px 8px;border-radius:6px}
+aside a.sub{color:var(--mute);font-size:13px;padding-left:18px}aside a:hover{background:var(--code)}aside b{display:block;margin-top:8px}
+main{max-width:860px;padding:24px 36px 80px;min-width:0}section{margin-bottom:56px;padding-bottom:24px;border-bottom:2px solid var(--line)}
+h1{font-size:28px}h2{margin-top:34px;padding-top:8px;border-top:1px solid var(--line)}h3{margin-top:24px}
+a{color:var(--brand)}code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow:auto}pre code{background:none;padding:0}
+table{border-collapse:collapse;display:block;overflow:auto;margin:12px 0}td,th{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}th{background:var(--code)}
+blockquote{margin:12px 0;padding:6px 14px;border-left:4px solid var(--brand);background:var(--code);border-radius:0 8px 8px 0}
+@media(max-width:800px){aside{display:none}main{padding:16px}}
+</style></head><body><aside><h1>✈ PromoCarter</h1><a href="#overview"><b>Overview</b></a><a class="sub" href="#overview-features">Features</a><a class="sub" href="#overview-quick-start">Quick start</a><a class="sub" href="#overview-documentation">Documentation</a><a class="sub" href="#overview-project-layout">Project layout</a><a class="sub" href="#overview-license-notes">License / notes</a><a href="#install"><b>Install & operate</b></a><a class="sub" href="#install-1-requirements">1. Requirements</a><a class="sub" href="#install-2-install">2. Install</a><a class="sub" href="#install-3-run">3. Run</a><a class="sub" href="#install-4-configuration">4. Configuration</a><a class="sub" href="#install-5-connect-an-ai-assistant-optional">5. Connect an AI assistant (optional)</a><a class="sub" href="#install-6-start-automatically-at-login-linux-systemd-user-service">6. Start automatically at login (Linux, systemd user service)</a><a class="sub" href="#install-7-backup-amp-restore">7. Backup &amp; restore</a><a class="sub" href="#install-8-upgrade">8. Upgrade</a><a class="sub" href="#install-9-uninstall">9. Uninstall</a><a class="sub" href="#install-10-troubleshooting">10. Troubleshooting</a><a href="#guide"><b>User guide</b></a><a class="sub" href="#guide-concepts">Concepts</a><a class="sub" href="#guide-layout">Layout</a><a class="sub" href="#guide-connections">Connections</a><a class="sub" href="#guide-planner">Planner</a><a class="sub" href="#guide-create-edit-a-post">Create / edit a post</a><a class="sub" href="#guide-media-library">Media library</a><a class="sub" href="#guide-time-amp-scheduling-details">Time &amp; scheduling details</a><a href="#formats"><b>Networks & formats</b></a><a class="sub" href="#formats-rules-that-apply-everywhere">Rules that apply everywhere</a><a href="#mcp"><b>MCP (AI control)</b></a><a class="sub" href="#mcp-set-up">Set up</a><a class="sub" href="#mcp-tools">Tools</a><a class="sub" href="#mcp-example-prompts">Example prompts</a><a class="sub" href="#mcp-safety">Safety</a><a class="sub" href="#mcp-testing-it-without-an-ai">Testing it without an AI</a><a class="sub" href="#mcp-troubleshooting">Troubleshooting</a><a href="#api"><b>HTTP API</b></a><a class="sub" href="#api-accounts">Accounts</a><a class="sub" href="#api-network-rules">Network rules</a><a class="sub" href="#api-assets-media-library">Assets (media library)</a><a class="sub" href="#api-posts">Posts</a><a class="sub" href="#api-scheduler">Scheduler</a><a href="#dev"><b>Development</b></a><a class="sub" href="#dev-stack">Stack</a><a class="sub" href="#dev-layout">Layout</a><a class="sub" href="#dev-data-model-sqlite-data-promocarter-db">Data model (SQLite, data/promocarter.db)</a><a class="sub" href="#dev-how-publishing-works">How publishing works</a><a class="sub" href="#dev-writing-a-real-connector">Writing a real connector</a><a class="sub" href="#dev-adding-a-network-or-format">Adding a network or format</a><a class="sub" href="#dev-commands">Commands</a><a class="sub" href="#dev-known-limitations">Known limitations</a></aside><main><section id="overview"><h1>PromoCarter</h1>
+<p>A self-hosted social media planner: plan posts on a calendar, attach images, video and PDFs from a media library, publish to many networks at once — each with its own format (reel, story, short, thread, poll…) — and let an AI assistant manage it all through MCP.</p>
+<blockquote>
+<p><strong>Status: working prototype.</strong> Publishing is <strong>simulated</strong> (a mock connector). Nothing is sent to X, Instagram, etc. until you implement real connectors — see <a href="#dev">docs/DEVELOPMENT.md</a>. There is <strong>no login</strong>: run it on a machine you trust (it binds to <code>127.0.0.1</code> by default).</p>
+</blockquote>
+<h2 id="overview-features">Features</h2>
+<ul>
+<li><strong>12 networks</strong>: Instagram, Facebook, TikTok, YouTube, Rumble, X, LinkedIn, Threads, Pinterest, Google Business, Bluesky, Mastodon</li>
+<li><strong>Per-network formats</strong>: Instagram post/carousel/reel/story · Facebook post/carousel/reel/story · TikTok video/photo carousel · YouTube video/short · Rumble video · X post/thread · LinkedIn post/document(PDF)/poll · Pinterest pin · Google Business update/event/offer … (<a href="#formats">full table</a>)</li>
+<li><strong>Planner</strong> with Month, Week and List views, network and status filters, drag-and-drop rescheduling</li>
+<li><strong>Composer</strong>: pick networks → write once → customise per network (format, own text, titles, privacy, poll options, thread posts, thumbnails…) → live per-network preview → schedule (quick-time buttons) or publish now</li>
+<li><strong>Media library</strong>: images, videos and PDFs (up to 1 GB), search, preview/playback, alt text, usage tracking, bulk delete</li>
+<li><strong>Validation before scheduling</strong>: every network/format is checked (media kind and count, sizes, text length, required fields) with plain-language errors</li>
+<li><strong>Background scheduler</strong> publishes due posts automatically (checks every 15 s)</li>
+<li><strong>MCP server</strong>: 14 tools so Claude (or any MCP client) can upload media and create/schedule/edit posts in any format</li>
+<li><strong>JSON HTTP API</strong> for everything the UI does</li>
+</ul>
+<h2 id="overview-quick-start">Quick start</h2>
+<pre><code class="language-bash">cd ~/Projects/promocarter
+./install.sh          # checks Node, installs dependencies, builds
+./start.sh prod       # → http://localhost:3100
+</code></pre>
+<p>Needs <strong>Node.js 22.13+</strong>. Full steps for every OS: <a href="#install">docs/INSTALL.md</a>.</p>
+<h2 id="overview-documentation">Documentation</h2>
+<table>
+<thead>
+<tr>
+<th>Doc</th>
+<th>What&#39;s in it</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#install">docs/INSTALL.md</a></td>
+<td>Requirements, install, run, configuration, auto-start, backup, upgrade, uninstall, troubleshooting</td>
+</tr>
+<tr>
+<td><a href="#guide">docs/USER-GUIDE.md</a></td>
+<td>Using the planner, composer, media library, connections; statuses</td>
+</tr>
+<tr>
+<td><a href="#formats">docs/FORMATS.md</a></td>
+<td>Every network × format: media rules, text limits, extra fields</td>
+</tr>
+<tr>
+<td><a href="#mcp">docs/MCP.md</a></td>
+<td>Connecting an AI assistant; every tool with parameters; example prompts; safety</td>
+</tr>
+<tr>
+<td><a href="#api">docs/API.md</a></td>
+<td>HTTP API reference with curl examples</td>
+</tr>
+<tr>
+<td><a href="#dev">docs/DEVELOPMENT.md</a></td>
+<td>Architecture, data model, writing real network connectors, limitations</td>
+</tr>
+</tbody></table>
+<p>A single-page offline version of all docs: <code>docs/index.html</code>.</p>
+<h2 id="overview-project-layout">Project layout</h2>
+<pre><code>app/            Next.js pages (planner, compose, media, connections) and API routes
+lib/            database, network rules, connectors, publisher, post logic
+mcp/server.mjs  MCP server (stdio)
+instrumentation*.ts  starts the background scheduler
+data/           created at runtime: promocarter.db + uploads/   (back this up)
+</code></pre>
+<h2 id="overview-license-notes">License / notes</h2>
+<p>Personal project; no license has been chosen. Tested on Node 26 / Linux. Platform names and trademarks belong to their owners; this project is not affiliated with any of them.</p>
+</section><section id="install"><h1>Install &amp; operate</h1>
+<h2 id="install-1-requirements">1. Requirements</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Node.js</strong></td>
+<td><strong>22.13 or newer</strong> (uses the built-in <code>node:sqlite</code>; it prints an &quot;ExperimentalWarning&quot; — harmless). Developed and tested on Node 26.8.</td>
+</tr>
+<tr>
+<td><strong>npm</strong></td>
+<td>Comes with Node (tested with npm 11)</td>
+</tr>
+<tr>
+<td><strong>Disk</strong></td>
+<td>~500 MB for dependencies + space for your media (<code>data/uploads/</code>)</td>
+</tr>
+<tr>
+<td><strong>Browser</strong></td>
+<td>Any current Chrome, Firefox, Safari or Edge</td>
+</tr>
+<tr>
+<td><strong>OS</strong></td>
+<td>Linux (tested), macOS, Windows (WSL recommended). No native modules to compile.</td>
+</tr>
+</tbody></table>
+<p>Install Node if you don&#39;t have it:</p>
+<ul>
+<li>Arch Linux: <code>sudo pacman -S nodejs npm</code></li>
+<li>Debian/Ubuntu: use <a href="https://github.com/nodesource/distributions">NodeSource</a> or <code>nvm</code> (the distro package is often too old)</li>
+<li>macOS: <code>brew install node</code></li>
+<li>Any OS: <code>nvm install --lts</code> (<a href="https://github.com/nvm-sh/nvm">nvm</a>)</li>
+</ul>
+<p>Check: <code>node -v</code> → <code>v22.13.0</code> or higher.</p>
+<h2 id="install-2-install">2. Install</h2>
+<h3 id="install-from-this-folder-already-on-your-machine">From this folder (already on your machine)</h3>
+<pre><code class="language-bash">cd ~/Projects/promocarter
+./install.sh
+</code></pre>
+<h3 id="install-from-the-release-package">From the release package</h3>
+<pre><code class="language-bash">tar xzf ~/Downloads/promocarter-0.3.0.tar.gz -C ~/Projects/
+cd ~/Projects/promocarter
+./install.sh
+</code></pre>
+<p><code>install.sh</code> verifies the Node version, runs <code>npm install</code> and <code>npm run build</code>.</p>
+<p>Manual equivalent: <code>npm install &amp;&amp; npm run build</code>.</p>
+<h2 id="install-3-run">3. Run</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>./start.sh prod</code></td>
+<td>Production server (build once, fast). <strong>Recommended.</strong></td>
+</tr>
+<tr>
+<td><code>./start.sh</code></td>
+<td>Dev server with hot reload (for changing code)</td>
+</tr>
+</tbody></table>
+<p>Open <strong><a href="http://localhost:3100">http://localhost:3100</a></strong>. Stop with Ctrl+C.</p>
+<p>The background scheduler starts automatically with the server. <strong>Posts only publish while the server is running.</strong> If it was off when a post came due, the post is published at the next check after startup (it is <em>late</em>, not skipped).</p>
+<h2 id="install-4-configuration">4. Configuration</h2>
+<p>Environment variables (set inline, e.g. <code>PORT=4000 ./start.sh prod</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>PORT</code></td>
+<td><code>3100</code></td>
+<td>Port to listen on</td>
+</tr>
+<tr>
+<td><code>HOST</code></td>
+<td><code>127.0.0.1</code></td>
+<td>Interface. Default = this machine only. <code>0.0.0.0</code> exposes it to your network — <strong>there is no authentication</strong>, so only do this on a trusted LAN or behind a reverse proxy with auth.</td>
+</tr>
+<tr>
+<td><code>PROMOCARTER_URL</code></td>
+<td><code>http://localhost:3100</code></td>
+<td>Used by the MCP server to find the app (see <a href="#mcp">MCP.md</a>)</td>
+</tr>
+</tbody></table>
+<p>Data location is fixed: <code>data/</code> inside the project folder (the app must be started from the project folder, which <code>start.sh</code> does).</p>
+<p>Limits: upload size 1 GB (<code>MAX_UPLOAD_MB</code> in <code>lib/media.ts</code>); allowed file types in <code>ALLOWED</code> in the same file; scheduler interval 15 s in <code>instrumentation-node.ts</code>. Rebuild after changing code: <code>npm run build</code>.</p>
+<h2 id="install-5-connect-an-ai-assistant-optional">5. Connect an AI assistant (optional)</h2>
+<p>See <a href="#mcp">MCP.md</a>. Short version, for Claude Code:</p>
+<pre><code class="language-bash">claude mcp add promocarter --scope user \
+  -e PROMOCARTER_URL=http://localhost:3100 \
+  -- node ~/Projects/promocarter/mcp/server.mjs
+</code></pre>
+<p>(Use the absolute path to the folder.)</p>
+<h2 id="install-6-start-automatically-at-login-linux-systemd-user-service">6. Start automatically at login (Linux, systemd user service)</h2>
+<p><em>Example — adjust paths; not part of the tested install.</em></p>
+<pre><code class="language-ini"># ~/.config/systemd/user/promocarter.service
+[Unit]
+Description=PromoCarter
+
+[Service]
+WorkingDirectory=%h/Projects/promocarter
+ExecStart=/usr/bin/npm run start
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+</code></pre>
+<pre><code class="language-bash">systemctl --user daemon-reload
+systemctl --user enable --now promocarter
+systemctl --user status promocarter
+journalctl --user -u promocarter -f      # logs
+</code></pre>
+<p>Run <code>npm run build</code> first. Use <code>which npm</code> if it isn&#39;t at <code>/usr/bin/npm</code>.</p>
+<h2 id="install-7-backup-amp-restore">7. Backup &amp; restore</h2>
+<p>Everything you create lives in <code>data/</code>:</p>
+<ul>
+<li><code>promocarter.db</code> (+ <code>-wal</code>, <code>-shm</code> files while running) — accounts, posts, media metadata</li>
+<li><code>uploads/</code> — the media files</li>
+</ul>
+<p>Backup (stop the server first for a perfectly consistent copy): <code>cp -a data /path/to/backup/data-$(date +%F)</code>
+Restore: stop the server, replace <code>data/</code> with the backup, start again.
+Reset to empty: stop the server and delete <code>data/</code>.</p>
+<h2 id="install-8-upgrade">8. Upgrade</h2>
+<ol>
+<li>Back up <code>data/</code>.</li>
+<li>Replace the code (keep <code>data/</code>).</li>
+<li><code>./install.sh</code> (new dependencies + rebuild). Database tables are created/extended automatically at startup.</li>
+</ol>
+<h2 id="install-9-uninstall">9. Uninstall</h2>
+<p>Stop the server, remove the systemd service if you made one, remove the MCP entry (<code>claude mcp remove promocarter</code>), then delete the project folder.</p>
+<h2 id="install-10-troubleshooting">10. Troubleshooting</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Node … is too old</code> / <code>Cannot find module &#39;node:sqlite&#39;</code></td>
+<td>Upgrade to Node 22.13+</td>
+</tr>
+<tr>
+<td><code>EADDRINUSE</code> / port already in use</td>
+<td>Another process uses 3100: <code>PORT=3101 ./start.sh prod</code>, or stop the other one (<code>fuser -k 3100/tcp</code>)</td>
+</tr>
+<tr>
+<td>Page loads but nothing saves / API errors</td>
+<td>Check the terminal running the server for the stack trace</td>
+</tr>
+<tr>
+<td>Scheduled post didn&#39;t go out</td>
+<td>Server must be running at the scheduled time; check its status in the calendar (red = failed, open it to see the error). Time is shown in your browser&#39;s timezone.</td>
+</tr>
+<tr>
+<td>Upload fails &quot;Unsupported file type&quot;</td>
+<td>Only JPG/PNG/GIF/WebP/MP4/MOV/WebM/PDF. Rename files with the right extension if the type is unknown.</td>
+</tr>
+<tr>
+<td>Upload fails &quot;over 1024 MB&quot;</td>
+<td>Raise <code>MAX_UPLOAD_MB</code> in <code>lib/media.ts</code>, rebuild.</td>
+</tr>
+<tr>
+<td>Video won&#39;t play in the browser</td>
+<td>Browsers play H.264/AAC MP4 and WebM best. Some <code>.mov</code> files (e.g. HEVC) won&#39;t preview, though the file is stored fine. Re-encode: <code>ffmpeg -i in.mov -c:v libx264 -c:a aac out.mp4</code></td>
+</tr>
+<tr>
+<td>MCP tools fail: &quot;Cannot reach PromoCarter&quot;</td>
+<td>Start the app first, and check <code>PROMOCARTER_URL</code>/port</td>
+</tr>
+<tr>
+<td>MCP server not listed in Claude Code</td>
+<td>Restart Claude Code in the project folder (for <code>.mcp.json</code>) or re-run <code>claude mcp add …</code>; <code>claude mcp list</code> to verify</td>
+</tr>
+<tr>
+<td>Port is open to the network unexpectedly</td>
+<td>You set <code>HOST=0.0.0.0</code>; unset it.</td>
+</tr>
+</tbody></table>
+</section><section id="guide"><h1>User guide</h1>
+<blockquote>
+<p><strong>Demo mode:</strong> publishing is simulated. &quot;Published&quot; means the mock connector accepted it; nothing leaves your machine.</p>
+</blockquote>
+<h2 id="guide-concepts">Concepts</h2>
+<ul>
+<li><strong>Connection (account)</strong> — a connected profile: network + handle. Currently simulated.</li>
+<li><strong>Post</strong> — shared text + optional media + one or more <strong>targets</strong> + a time.</li>
+<li><strong>Target</strong> — one account in a post, with its own <strong>format</strong> (reel, story, short, thread…), optional own text, and extra fields. Each target is published and reported separately.</li>
+<li><strong>Asset</strong> — an image, video or PDF in the media library. Posts reference assets; deleting a post never deletes its media.</li>
+<li><strong>Status</strong> — <code>draft</code> → <code>scheduled</code> → <code>publishing</code> → <code>published</code> (all targets OK) or <code>failed</code> (at least one target failed).</li>
+</ul>
+<h2 id="guide-layout">Layout</h2>
+<p>Left sidebar: <strong>＋ Create post</strong>, <strong>Planner</strong>, <strong>Media library</strong>, <strong>Connections</strong>.</p>
+<h2 id="guide-connections">Connections</h2>
+<p>Pick a network tile (each shows the formats it supports), type the handle or channel name, <strong>Connect</strong>. Networks: Instagram, Facebook, TikTok, YouTube, Rumble, X, LinkedIn, Threads, Pinterest, Google Business, Bluesky, Mastodon. <strong>Remove</strong> disconnects an account (it&#39;s dropped from posts&#39; targets). Real OAuth is not implemented — see DEVELOPMENT.md.</p>
+<h2 id="guide-planner">Planner</h2>
+<ul>
+<li><strong>Month / Week / List</strong> views (top right). Your choice is remembered.</li>
+<li><strong>Network chips</strong> filter by network; <strong>status buttons</strong> filter by draft/scheduled/published/failed. Filters apply to every view.</li>
+<li>Each post card shows network badges, time, 📎 media count, any non-default formats (🎬 Reel, 📱 Short, 🧵 Thread, 📊 Poll…) and the text. Left border: green published, red failed, dashed draft, blue scheduled.</li>
+<li><strong>Click</strong> a card to edit. <strong>Hover a day → ＋</strong> to start a post on that day. <strong>Drag</strong> a card to another day to reschedule (time kept).</li>
+<li>Refreshes itself every 10 s so you can watch scheduled posts publish.</li>
+</ul>
+<h2 id="guide-create-edit-a-post">Create / edit a post</h2>
+<p>The composer has four steps and a live preview on the right.</p>
+<ol>
+<li><strong>Choose networks</strong> — click connection tiles (✓ = selected).</li>
+<li><strong>Write &amp; customise</strong><ul>
+<li>Type the shared text once.</li>
+<li>Tabs below: <strong>All networks</strong> shows each selected network with a quick <strong>format</strong> dropdown and a &quot;⚠ n to fix / Settings ›&quot; button. Each network tab has:<ul>
+<li><strong>format buttons</strong> (e.g. Instagram: Post · Carousel · Reel · Story) and a hint on what it takes,</li>
+<li><strong>&quot;Write different … for <network>&quot;</strong> to override the text for just that network (caption/description/question counters are per format),</li>
+<li><strong>extra fields</strong> for that format — e.g. YouTube title/visibility/tags/thumbnail, TikTok privacy and comment/duet/stitch toggles, Instagram collaborators/trial reel/first comment, X thread posts, LinkedIn poll options &amp; duration, Pinterest title/board/link, Google Business button/event dates/coupon.</li>
+</ul>
+</li>
+<li>A tab shows ✓ when ready or ⚠ n with the number of problems.</li>
+</ul>
+</li>
+<li><strong>Media</strong> — <strong>＋ Add media</strong> opens the picker (choose from the library or upload on the spot; images, videos and PDFs). ← → reorder, ✕ remove. Media is shared by all selected networks; each network&#39;s format checks it.</li>
+<li><strong>Schedule</strong> — pick date/time (your timezone) or use <strong>In 1 hour / Tomorrow 9:00 / Tomorrow 12:00 / Next Monday 9:00</strong>. Then:<ul>
+<li><strong>Schedule</strong> — queue for that time</li>
+<li><strong>Publish now</strong> — send immediately</li>
+<li><strong>Save draft</strong> — keep without scheduling (never validated; fix it later)</li>
+</ul>
+</li>
+</ol>
+<p><strong>Schedule</strong> and <strong>Publish now</strong> stay disabled while any network has a problem; the problems are listed in plain language with a <em>fix</em> link. The server re-checks everything.</p>
+<p>Preview: use the network icons above the preview to flip between networks. It shows the format&#39;s shape (9:16 for reels/stories/shorts/TikTok, 1:1 for Instagram posts, 16:9 for YouTube/Rumble), the title, text, poll options, thread, link, etc.</p>
+<p>Tips: one account takes one format per post — to post both a Reel and a Story to the same account, make two posts. Put <code>[fail]</code> in the text or title to see how a failed publish looks.</p>
+<p>See <strong><a href="#formats">FORMATS.md</a></strong> for the exact rules per network and format.</p>
+<h2 id="guide-media-library">Media library</h2>
+<p><strong>Upload</strong> by the button or by dragging files onto the drop zone (multi-file, with progress). Supported: JPG, PNG, GIF, WebP · MP4, MOV, WebM · PDF; up to 1 GB each.</p>
+<ul>
+<li>Search matches file name and alt text; filter <strong>All / Images / Videos / PDFs</strong>.</li>
+<li>Click a card for details: full preview (video plays, PDF opens), rename, alt text, download, and which posts use it.</li>
+<li>Checkboxes → bulk <strong>Delete</strong>. Deleting a file used by a draft/scheduled post asks first and detaches it from those posts.</li>
+</ul>
+<h2 id="guide-time-amp-scheduling-details">Time &amp; scheduling details</h2>
+<ul>
+<li>Times are stored in UTC and shown in your browser&#39;s timezone.</li>
+<li>The scheduler checks every 15 s while the server runs. A post publishes within ~15 s of its time. If the server was off, overdue posts publish at the next check after it starts.</li>
+<li>If one target of a post fails, the post is <code>failed</code>; open it, read the error under the buttons, fix, and <strong>Publish now</strong> (only unpublished targets are retried).</li>
+</ul>
+</section><section id="formats"><h1>Networks &amp; post formats</h1>
+<p>Every selected network gets its <strong>own format</strong> in the composer (post, reel, story, short, thread, document, poll…), its own optional text, and its own extra fields. Everything below is enforced by the app before a post can be scheduled or published, and is available from the API/MCP as <code>GET /api/networks</code>.</p>
+<blockquote>
+<p><strong>These limits are approximations</strong> based on each platform&#39;s general behavior and public descriptions of which formats exist. Platforms change rules often — verify against current platform documentation before going live, and edit <code>lib/networks.ts</code> to adjust. <code>*</code> = required field. I&#39;m not aware of a public upload API for Rumble, so a real Rumble connector may need partner access or another approach.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Network</th>
+<th>Format (<code>key</code>)</th>
+<th>Media</th>
+<th>Text</th>
+<th>Extra fields</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Instagram</td>
+<td><code>post</code> 🖼 Post</td>
+<td>1 image/video<br>img 8 MB, video 300 MB</td>
+<td>Caption ≤2200</td>
+<td>Collaborators, First comment</td>
+</tr>
+<tr>
+<td>Instagram</td>
+<td><code>carousel</code> 🗂 Carousel</td>
+<td>2–10 image/video, mixing OK<br>img 8 MB, video 300 MB</td>
+<td>Caption ≤2200</td>
+<td>Collaborators, First comment</td>
+</tr>
+<tr>
+<td>Instagram</td>
+<td><code>reel</code> 🎬 Reel</td>
+<td>1 video<br>video 300 MB</td>
+<td>Caption ≤2200</td>
+<td>Collaborators, Trial reel, Also share to feed, First comment</td>
+</tr>
+<tr>
+<td>Instagram</td>
+<td><code>story</code> ⏱ Story</td>
+<td>1 image/video<br>img 8 MB, video 100 MB</td>
+<td>no caption</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Facebook</td>
+<td><code>post</code> 📝 Post</td>
+<td>0–10 image/video (max 1 video)<br>img 10 MB, video 1024 MB</td>
+<td>Text ≤63206</td>
+<td>First comment</td>
+</tr>
+<tr>
+<td>Facebook</td>
+<td><code>carousel</code> 🗂 Carousel</td>
+<td>2–10 image<br>img 10 MB</td>
+<td>Text ≤63206</td>
+<td>First comment</td>
+</tr>
+<tr>
+<td>Facebook</td>
+<td><code>reel</code> 🎬 Reel</td>
+<td>1 video<br>video 1024 MB</td>
+<td>Caption ≤2200</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Facebook</td>
+<td><code>story</code> ⏱ Story</td>
+<td>1 image/video<br>img 10 MB, video 1024 MB</td>
+<td>no caption</td>
+<td>—</td>
+</tr>
+<tr>
+<td>TikTok</td>
+<td><code>video</code> 🎬 Video</td>
+<td>1 video<br>video 1024 MB</td>
+<td>Caption ≤2200</td>
+<td>Who can watch, Allow comments, Allow duets, Allow stitches</td>
+</tr>
+<tr>
+<td>TikTok</td>
+<td><code>photo</code> 🗂 Photo carousel</td>
+<td>1–35 image<br>img 20 MB</td>
+<td>Caption ≤2200</td>
+<td>Title, Who can watch, Allow comments</td>
+</tr>
+<tr>
+<td>YouTube</td>
+<td><code>video</code> ▶️ Video</td>
+<td>1 video<br>video 1024 MB</td>
+<td>Description ≤5000</td>
+<td>Title*, Visibility, Tags, Custom thumbnail, Made for kids</td>
+</tr>
+<tr>
+<td>YouTube</td>
+<td><code>short</code> 📱 Short</td>
+<td>1 video<br>video 1024 MB</td>
+<td>Description ≤5000</td>
+<td>Title*, Visibility, Tags</td>
+</tr>
+<tr>
+<td>Rumble</td>
+<td><code>video</code> ▶️ Video</td>
+<td>1 video<br>video 1024 MB</td>
+<td>Description ≤5000</td>
+<td>Title*, Visibility, Tags, Custom thumbnail</td>
+</tr>
+<tr>
+<td>X</td>
+<td><code>post</code> 📝 Post</td>
+<td>0–4 image/video (max 1 video)<br>img 5 MB, video 512 MB</td>
+<td>Text ≤280</td>
+<td>—</td>
+</tr>
+<tr>
+<td>X</td>
+<td><code>thread</code> 🧵 Thread</td>
+<td>0–4 image/video (max 1 video)<br>img 5 MB, video 512 MB</td>
+<td>First post ≤280</td>
+<td>Next posts in the thread*</td>
+</tr>
+<tr>
+<td>LinkedIn</td>
+<td><code>post</code> 📝 Post</td>
+<td>0–9 image/video (max 1 video)<br>img 8 MB, video 512 MB</td>
+<td>Text ≤3000</td>
+<td>First comment</td>
+</tr>
+<tr>
+<td>LinkedIn</td>
+<td><code>document</code> 📄 Document</td>
+<td>1 document<br>PDF 100 MB</td>
+<td>Text ≤3000</td>
+<td>Document title*</td>
+</tr>
+<tr>
+<td>LinkedIn</td>
+<td><code>poll</code> 📊 Poll</td>
+<td>none</td>
+<td>Question ≤140 (required)</td>
+<td>Options*, Duration</td>
+</tr>
+<tr>
+<td>Threads</td>
+<td><code>post</code> 📝 Post</td>
+<td>0–20 image/video, mixing OK<br>img 8 MB, video 300 MB</td>
+<td>Text ≤500</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Pinterest</td>
+<td><code>pin</code> 📌 Pin</td>
+<td>1 image/video<br>img 20 MB, video 2048 MB</td>
+<td>Description ≤500</td>
+<td>Title*, Destination link, Board*</td>
+</tr>
+<tr>
+<td>Google Business</td>
+<td><code>update</code> 📣 Update</td>
+<td>0–1 image<br>img 5 MB</td>
+<td>Text ≤1500</td>
+<td>Button, Button link</td>
+</tr>
+<tr>
+<td>Google Business</td>
+<td><code>event</code> 📅 Event</td>
+<td>0–1 image<br>img 5 MB</td>
+<td>Details ≤1500</td>
+<td>Event title*, Starts*, Ends*</td>
+</tr>
+<tr>
+<td>Google Business</td>
+<td><code>offer</code> 🏷 Offer</td>
+<td>0–1 image<br>img 5 MB</td>
+<td>Details ≤1500</td>
+<td>Offer title*, Starts*, Ends*, Coupon code, Redeem link</td>
+</tr>
+<tr>
+<td>Bluesky</td>
+<td><code>post</code> 📝 Post</td>
+<td>0–4 image/video (max 1 video)<br>img 1 MB, video 100 MB</td>
+<td>Text ≤300</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Mastodon</td>
+<td><code>post</code> 📝 Post</td>
+<td>0–4 image/video (max 1 video)<br>img 16 MB, video 99 MB</td>
+<td>Text ≤500</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<h2 id="formats-rules-that-apply-everywhere">Rules that apply everywhere</h2>
+<ul>
+<li>Media is attached once per post and shared by every selected network; each network&#39;s format checks it independently. If two networks need different media (e.g. a 9:16 reel and a 16:9 video), make two posts.</li>
+<li>One account takes one format per post.</li>
+<li>If a format needs a video and you attach an image (or the reverse), the composer shows exactly what&#39;s wrong and blocks Schedule / Publish now. Drafts are never blocked.</li>
+<li><em>Text override</em>: any network can use different text than the shared text (&quot;Write different caption for …&quot;).</li>
+<li>Thumbnails are chosen from the library (images only).</li>
+<li><code>[fail]</code> anywhere in the text or title makes the mock connector fail that network — handy for testing.</li>
+</ul>
+</section><section id="mcp"><h1>MCP: let an AI run PromoCarter</h1>
+<p><code>mcp/server.mjs</code> is a <a href="https://modelcontextprotocol.io">Model Context Protocol</a> server (stdio). It exposes PromoCarter as tools so an assistant such as Claude can upload media and create, schedule, edit and delete posts.</p>
+<p><strong>It controls the running app over HTTP</strong> (default <code>http://localhost:3100</code>), so:</p>
+<ol>
+<li>Start PromoCarter first (<code>./start.sh prod</code>).</li>
+<li>Anything the AI does shows up in the web UI immediately, and the app&#39;s scheduler does the publishing.</li>
+</ol>
+<h2 id="mcp-set-up">Set up</h2>
+<h3 id="mcp-claude-code">Claude Code</h3>
+<p><strong>Project-scoped:</strong> copy <code>.mcp.json.example</code> to <code>.mcp.json</code> in the project folder and replace <code>/ABSOLUTE/PATH/TO/promocarter</code> with the real path (<code>.mcp.json</code> is git-ignored because it holds a machine-specific path). Claude Code loads it when you start inside that folder (approve the server when prompted).</p>
+<p><strong>User-scoped (available in every folder):</strong></p>
+<pre><code class="language-bash">claude mcp add promocarter --scope user \
+  -e PROMOCARTER_URL=http://localhost:3100 \
+  -- node /path/to/promocarter/mcp/server.mjs
+claude mcp list      # should show promocarter ✓ Connected
+</code></pre>
+<p>Remove: <code>claude mcp remove promocarter</code>.</p>
+<h3 id="mcp-claude-desktop-other-mcp-clients">Claude Desktop / other MCP clients</h3>
+<p>Add to the client&#39;s MCP config (Claude Desktop: Settings → Developer → Edit Config):</p>
+<pre><code class="language-json">{
+  &quot;mcpServers&quot;: {
+    &quot;promocarter&quot;: {
+      &quot;command&quot;: &quot;node&quot;,
+      &quot;args&quot;: [&quot;/path/to/promocarter/mcp/server.mjs&quot;],
+      &quot;env&quot;: { &quot;PROMOCARTER_URL&quot;: &quot;http://localhost:3100&quot; }
+    }
+  }
+}
+</code></pre>
+<p>Use the absolute path; restart the client. Any stdio-capable MCP client works the same way.</p>
+<h3 id="mcp-different-port-machine">Different port / machine</h3>
+<p>Set <code>PROMOCARTER_URL</code> (e.g. <code>http://localhost:4000</code>). Remote access means exposing the app, which has <strong>no authentication</strong> — don&#39;t do that on an untrusted network.</p>
+<h2 id="mcp-tools">Tools</h2>
+<h3 id="mcp-read-only">Read-only</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Parameters</th>
+<th>Returns</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>list_accounts</code></td>
+<td>–</td>
+<td>Connected accounts (<code>id</code>, <code>network</code>, <code>handle</code>)</td>
+</tr>
+<tr>
+<td><code>get_network_rules</code></td>
+<td><code>network?</code></td>
+<td>Networks and their <strong>formats</strong> (post/reel/story/short/thread/document/poll…), media rules, text limits and option fields. Call this before <code>create_post</code>.</td>
+</tr>
+<tr>
+<td><code>list_assets</code></td>
+<td><code>kind?</code> image|video|document, <code>query?</code></td>
+<td>Assets with size, alt, usage count</td>
+</tr>
+<tr>
+<td><code>get_asset</code></td>
+<td><code>id</code></td>
+<td>One asset + posts using it</td>
+</tr>
+<tr>
+<td><code>list_posts</code></td>
+<td><code>from?</code>+<code>to?</code> (ISO), <code>status?</code></td>
+<td>Posts with per-account status/errors and media</td>
+</tr>
+<tr>
+<td><code>get_post</code></td>
+<td><code>id</code></td>
+<td>One post</td>
+</tr>
+</tbody></table>
+<h3 id="mcp-write">Write</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Parameters</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>upload_asset</code></td>
+<td><code>path</code> <strong>or</strong> <code>url</code>, <code>name?</code>, <code>alt?</code></td>
+<td>Adds a file to the library. <code>path</code> must be absolute. Types: JPG PNG GIF WebP MP4 MOV WebM PDF, ≤1 GB.</td>
+</tr>
+<tr>
+<td><code>update_asset</code></td>
+<td><code>id</code>, <code>name?</code>, <code>alt?</code></td>
+<td>Rename / alt text</td>
+</tr>
+<tr>
+<td><code>create_post</code></td>
+<td><code>content</code>, <code>targets[]?</code> (<code>{accountId, type?, content?, options?}</code>), <code>accountIds[]?</code>, <code>mediaIds[]?</code>, <code>action</code>, <code>scheduledAt?</code></td>
+<td>One call can target many networks, each with its own <strong>format</strong> (<code>type</code>), optional own text and <code>options</code> (title, visibility, privacy, <code>thread:[…]</code>, <code>pollOptions:[…]</code>, board, link, firstComment, thumbnail asset id…). <code>action</code>: <code>draft</code> | <code>schedule</code> (needs <code>scheduledAt</code>, ISO 8601 with timezone) | <code>publish_now</code>. All targets are validated; every problem is returned at once.</td>
+</tr>
+<tr>
+<td><code>update_post</code></td>
+<td><code>id</code> + any of the create fields</td>
+<td>Unspecified fields keep their values, including each network&#39;s format/options. Giving <code>targets</code> replaces the list.</td>
+</tr>
+<tr>
+<td><code>reschedule_post</code></td>
+<td><code>id</code>, <code>scheduledAt</code></td>
+<td>Move to a new time</td>
+</tr>
+<tr>
+<td><code>publish_post_now</code></td>
+<td><code>id</code></td>
+<td>Publish immediately; retries failed accounts</td>
+</tr>
+</tbody></table>
+<h3 id="mcp-destructive">Destructive</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Parameters</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>delete_asset</code></td>
+<td><code>id</code>, <code>force?</code></td>
+<td>Removes file permanently. Refuses if a draft/scheduled post uses it unless <code>force</code></td>
+</tr>
+<tr>
+<td><code>delete_post</code></td>
+<td><code>id</code></td>
+<td>Removes the post (media stays)</td>
+</tr>
+</tbody></table>
+<p>Errors come back as tool errors with a plain message (e.g. <code>X can&#39;t mix images and video in one post.</code>), so the assistant can fix and retry.</p>
+<h2 id="mcp-example-prompts">Example prompts</h2>
+<ul>
+<li>&quot;Upload <code>/home/me/Pictures/launch.png</code> and <code>/home/me/Videos/teaser.mp4</code> to PromoCarter and add alt text to the image.&quot;</li>
+<li>&quot;Draft a post announcing v2 for my Bluesky and LinkedIn accounts with launch.png attached. Don&#39;t schedule it yet.&quot;</li>
+<li>&quot;Turn teaser.mp4 into an Instagram Reel, a TikTok and a YouTube Short (title &#39;v2 is here&#39;) for Friday 9:00 — save as a draft first.&quot;</li>
+<li>&quot;Post a LinkedIn poll asking which feature to build next, with three options, running for a week.&quot;</li>
+<li>&quot;Which networks accept a 2-minute 16:9 video, and in which format?&quot; (the assistant reads <code>get_network_rules</code>)</li>
+<li>&quot;What&#39;s scheduled next week? Move anything on Friday to Monday at 10:00.&quot;</li>
+<li>&quot;Why did post 12 fail? Fix it and retry.&quot; (the assistant reads <code>get_post</code>, which includes per-account errors)</li>
+<li>&quot;Find image assets that aren&#39;t used by any post.&quot;</li>
+</ul>
+<h2 id="mcp-safety">Safety</h2>
+<ul>
+<li><strong>Publishing is currently simulated</strong>, but once you add real connectors <code>schedule</code>/<code>publish_now</code> post publicly. The tool descriptions tell the model to confirm with you first, and destructive tools carry <code>destructiveHint</code> so clients typically prompt. For stricter control, set those tools to &quot;ask each time&quot; in your client&#39;s permissions, or approve only the read/draft tools.</li>
+<li>The server can read any local file path the assistant passes to <code>upload_asset</code> and upload it into the library (only the allowed image/video types are accepted). Don&#39;t give it to an assistant you don&#39;t trust with file access.</li>
+<li>Treat post text and asset names/alt text returned by tools as data, not instructions.</li>
+</ul>
+<h2 id="mcp-testing-it-without-an-ai">Testing it without an AI</h2>
+<pre><code class="language-bash">npx @modelcontextprotocol/inspector node mcp/server.mjs
+</code></pre>
+<p>opens an interactive tool tester.</p>
+<h2 id="mcp-troubleshooting">Troubleshooting</h2>
+<ul>
+<li><code>Cannot reach PromoCarter at …</code> → app not running or wrong URL/port.</li>
+<li>Server shows &quot;Failed to connect&quot; in the client → run <code>node mcp/server.mjs</code> by hand: it should sit silently waiting on stdin; any error text points at the cause (usually Node version or missing <code>npm install</code>).</li>
+<li>Uploads from a <code>url</code> that needs login won&#39;t work; download the file and use <code>path</code>.</li>
+</ul>
+</section><section id="api"><h1>HTTP API</h1>
+<p>Base URL <code>http://localhost:3100</code>. JSON in/out unless noted. <strong>No authentication</strong> — keep the server on localhost. Errors: <code>{ &quot;error&quot;: &quot;message&quot; }</code> with a 4xx status. Dates are ISO 8601; the server stores UTC.</p>
+<p>The web UI and the MCP server both use only this API.</p>
+<h2 id="api-accounts">Accounts</h2>
+<table>
+<thead>
+<tr>
+<th>Method &amp; path</th>
+<th>Body / query</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GET /api/accounts</code></td>
+<td>–</td>
+<td><code>[ {id, network, handle, created_at} ]</code></td>
+</tr>
+<tr>
+<td><code>POST /api/accounts</code></td>
+<td><code>{network, handle}</code> — network ∈ x, instagram, facebook, linkedin, bluesky, mastodon</td>
+<td>the account</td>
+</tr>
+<tr>
+<td><code>DELETE /api/accounts?id=1</code></td>
+<td>–</td>
+<td><code>{ok:true}</code> (removes it from posts&#39; targets)</td>
+</tr>
+</tbody></table>
+<h2 id="api-network-rules">Network rules</h2>
+<p><code>GET /api/networks</code> → <code>{ &quot;&lt;network&gt;&quot;: { label, short, color, formats: [ { key, label, icon, hint, usesText, textRequired, textMax, textLabel, shape, media: {min,max,maxVideos,kinds,mix,imageMB,videoMB,docMB}, fields: [ {key,label,type,required,max,options,default,minItems,maxItems} ] } ] } }</code></p>
+<p>Network keys: <code>instagram facebook tiktok youtube rumble x linkedin threads pinterest google bluesky mastodon</code>. Human-readable table: <a href="#formats">FORMATS.md</a>. Field <code>type</code>: text, url, select, toggle, list (array of strings), datetime, thumbnail (asset id of an image).</p>
+<h2 id="api-assets-media-library">Assets (media library)</h2>
+<h3 id="api-list">List</h3>
+<p><code>GET /api/assets?kind=image|video|document&amp;q=text</code> →</p>
+<pre><code class="language-json">[{&quot;id&quot;:3,&quot;name&quot;:&quot;a.png&quot;,&quot;mime&quot;:&quot;image/png&quot;,&quot;kind&quot;:&quot;image&quot;,&quot;size&quot;:589,&quot;alt&quot;:null,&quot;created_at&quot;:&quot;2026-11-19T03:35:56.986Z&quot;,&quot;used&quot;:0}]
+</code></pre>
+<h3 id="api-upload">Upload</h3>
+<p><code>POST /api/assets?name=&lt;filename&gt;</code> — body is the <strong>raw file bytes</strong> (not multipart); <code>Content-Type</code> is the file&#39;s MIME type (if it&#39;s missing/generic, the type is inferred from the extension in <code>name</code>). Streams to disk.</p>
+<pre><code class="language-bash">curl -X POST &quot;http://localhost:3100/api/assets?name=photo.jpg&quot; \
+     -H &quot;Content-Type: image/jpeg&quot; --data-binary @photo.jpg
+</code></pre>
+<p>→ <code>201</code> + asset. <code>415</code> unsupported type, <code>413</code> over 1 GB, <code>400</code> empty/failed.</p>
+<h3 id="api-one-asset">One asset</h3>
+<ul>
+<li><code>GET /api/assets/{id}</code> → asset + <code>usedBy: [{id,status,content,scheduled_at}]</code></li>
+<li><code>PATCH /api/assets/{id}</code> <code>{name?, alt?}</code> → asset</li>
+<li><code>DELETE /api/assets/{id}[?force=1]</code> → <code>{ok:true}</code>; <code>409</code> with <code>usedBy</code> if a draft/scheduled post uses it and <code>force</code> not set</li>
+<li><code>GET /api/assets/{id}/file[?download=1]</code> → the original bytes, with HTTP <code>Range</code> support (video seeking)</li>
+</ul>
+<h2 id="api-posts">Posts</h2>
+<p>Post object:</p>
+<pre><code class="language-json">{ &quot;id&quot;: 7, &quot;content&quot;: &quot;shared text&quot;, &quot;status&quot;: &quot;scheduled&quot;,
+  &quot;scheduled_at&quot;: &quot;2026-12-01T15:00:00.000Z&quot;, &quot;published_at&quot;: null,
+  &quot;targets&quot;: [{&quot;account_id&quot;:1,&quot;network&quot;:&quot;youtube&quot;,&quot;handle&quot;:&quot;@me&quot;,&quot;type&quot;:&quot;short&quot;,
+               &quot;content&quot;:null,&quot;options&quot;:{&quot;title&quot;:&quot;Hi&quot;,&quot;visibility&quot;:&quot;public&quot;},
+               &quot;status&quot;:&quot;pending&quot;,&quot;external_id&quot;:null,&quot;error&quot;:null}],
+  &quot;media&quot;:   [{&quot;id&quot;:3,&quot;name&quot;:&quot;clip.mp4&quot;,&quot;mime&quot;:&quot;video/mp4&quot;,&quot;kind&quot;:&quot;video&quot;,&quot;size&quot;:11508,&quot;alt&quot;:null}] }
+</code></pre>
+<p><code>status</code>: draft | scheduled | publishing | published | failed. Target <code>status</code>: pending | published | failed. <code>target.content</code> is the per-network text override (null = use shared <code>content</code>). <code>target.type</code> is the format key.</p>
+<table>
+<thead>
+<tr>
+<th>Method &amp; path</th>
+<th>Body / query</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GET /api/posts</code></td>
+<td>optional <code>from</code>,<code>to</code> (ISO; both) and/or <code>status</code></td>
+<td>all posts if no filters</td>
+</tr>
+<tr>
+<td><code>POST /api/posts</code></td>
+<td>create body (below)</td>
+<td><code>publish_now</code> publishes before responding</td>
+</tr>
+<tr>
+<td><code>GET /api/posts/{id}</code></td>
+<td>–</td>
+<td></td>
+</tr>
+<tr>
+<td><code>PUT /api/posts/{id}</code></td>
+<td>create body — <strong>full replace</strong> of content/targets/media/time</td>
+<td></td>
+</tr>
+<tr>
+<td><code>PATCH /api/posts/{id}</code></td>
+<td><code>{scheduledAt}</code></td>
+<td>reschedule only</td>
+</tr>
+<tr>
+<td><code>DELETE /api/posts/{id}</code></td>
+<td>–</td>
+<td>media stays in library</td>
+</tr>
+</tbody></table>
+<p>Create body:</p>
+<pre><code class="language-json">{ &quot;content&quot;: &quot;Launch day!&quot;,
+  &quot;targets&quot;: [
+    { &quot;accountId&quot;: 1, &quot;type&quot;: &quot;reel&quot; },
+    { &quot;accountId&quot;: 2, &quot;type&quot;: &quot;short&quot;, &quot;options&quot;: { &quot;title&quot;: &quot;Launch day&quot;, &quot;visibility&quot;: &quot;public&quot; } },
+    { &quot;accountId&quot;: 3, &quot;type&quot;: &quot;post&quot;, &quot;content&quot;: &quot;Shorter text just for X&quot; }
+  ],
+  &quot;mediaIds&quot;: [3],
+  &quot;action&quot;: &quot;draft | schedule | publish_now&quot;, &quot;scheduledAt&quot;: &quot;2026-12-01T15:00:00Z&quot; }
+</code></pre>
+<ul>
+<li><code>targets[].type</code> defaults to the network&#39;s first format; <code>content</code> optional override; <code>options</code> = the format&#39;s fields (see <code>/api/networks</code>).</li>
+<li>Shortcut: <code>&quot;accountIds&quot;: [1,2]</code> (instead of <code>targets</code>) = default format, shared text, no options.</li>
+<li><code>draft</code>: saved, no validation. <code>schedule</code>: needs <code>scheduledAt</code>. <code>schedule</code> and <code>publish_now</code> validate <strong>every target</strong> (media kind/count/size, text length, required fields) and return <strong>all</strong> problems in one <code>400</code> message. One account may appear only once per post.</li>
+</ul>
+<p>Examples:</p>
+<pre><code class="language-bash"># Instagram Reel + YouTube Short from one video asset (id 3)
+curl -X POST localhost:3100/api/posts -d &#39;{&quot;content&quot;:&quot;Hi&quot;,&quot;mediaIds&quot;:[3],&quot;action&quot;:&quot;schedule&quot;,&quot;scheduledAt&quot;:&quot;2030-01-01T09:00:00Z&quot;,
+  &quot;targets&quot;:[{&quot;accountId&quot;:1,&quot;type&quot;:&quot;reel&quot;},{&quot;accountId&quot;:2,&quot;type&quot;:&quot;short&quot;,&quot;options&quot;:{&quot;title&quot;:&quot;Hi&quot;}}]}&#39;
+# LinkedIn poll
+curl -X POST localhost:3100/api/posts -d &#39;{&quot;content&quot;:&quot;Which feature next?&quot;,&quot;action&quot;:&quot;draft&quot;,
+  &quot;targets&quot;:[{&quot;accountId&quot;:4,&quot;type&quot;:&quot;poll&quot;,&quot;options&quot;:{&quot;pollOptions&quot;:[&quot;Analytics&quot;,&quot;Inbox&quot;],&quot;pollDuration&quot;:&quot;7&quot;}}]}&#39;
+</code></pre>
+<h2 id="api-scheduler">Scheduler</h2>
+<p><code>POST /api/scheduler</code> → <code>{published: n}</code> — runs the &quot;publish everything due&quot; pass now (also runs automatically every 15 s).</p>
+</section><section id="dev"><h1>Development notes</h1>
+<h2 id="dev-stack">Stack</h2>
+<p>Next.js 15 (App Router) + React 19 + TypeScript · SQLite via Node&#39;s built-in <code>node:sqlite</code> · plain CSS · MCP SDK + zod for the MCP server. No ORM, no native modules.</p>
+<h2 id="dev-layout">Layout</h2>
+<pre><code>app/page.tsx                 planner (month/week/list)
+app/compose/Composer.tsx     composer (uses MediaPicker)
+app/media/page.tsx           media library
+app/accounts/page.tsx        connections
+app/components/              NetBadge, Sidebar, FieldInput, PostPreview, MediaThumb, MediaPicker, Uploader
+app/api/…                    route handlers (accounts, assets, posts, networks, scheduler)
+lib/db.ts                    schema + query helpers
+lib/networks.ts              networks, FORMATS, per-format rules + validateTarget()  (shared by UI and server)
+lib/media.ts                 allowed types, upload limit
+lib/posts.ts                 create/update logic + validation
+lib/connectors.ts            connector interface + mock
+lib/publisher.ts             publishPost(), tick()
+lib/client.ts                browser upload helper (XHR with progress)
+instrumentation*.ts          starts the 15 s scheduler timer when the server boots
+mcp/server.mjs               MCP server
+</code></pre>
+<h2 id="dev-data-model-sqlite-data-promocarter-db">Data model (SQLite, <code>data/promocarter.db</code>)</h2>
+<ul>
+<li><code>accounts(id, network, handle, created_at)</code></li>
+<li><code>posts(id, content, status, scheduled_at, published_at, created_at)</code></li>
+<li><code>post_targets(post_id, account_id, status, external_id, error, type, options, content)</code> — one row per account per post; <code>type</code> = format key, <code>options</code> = JSON of the format&#39;s fields, <code>content</code> = per-network text override (NULL = shared text)</li>
+<li><code>assets(id, name, mime, kind, size, file, alt, created_at)</code> — <code>file</code> is the stored name in <code>data/uploads/</code> (UUID + extension; the display name is separate)</li>
+<li><code>post_media(post_id, asset_id, position)</code> — ordered attachments; cascades on delete</li>
+</ul>
+<p>Tables are created on first start (<code>CREATE TABLE IF NOT EXISTS</code>); <code>lib/db.ts</code> also adds the <code>type/options/content</code> columns to databases created by earlier versions. There is no general migration system yet: when changing the schema, add columns the same way.</p>
+<h2 id="dev-how-publishing-works">How publishing works</h2>
+<ol>
+<li><code>instrumentation-node.ts</code> sets an interval (15 s) calling <code>tick()</code> (guards against overlap).</li>
+<li><code>tick()</code> selects posts with <code>status=&#39;scheduled&#39; AND scheduled_at &lt;= now</code> and calls <code>publishPost(id)</code>.</li>
+<li><code>publishPost</code> marks <code>publishing</code>, loops over the post&#39;s pending/failed targets, calls <code>connectorFor(network).publish(account, {content, type, options, media})</code> (<code>content</code> already has the per-network override applied), records <code>external_id</code> or <code>error</code> per target, and sets the post <code>published</code> (all OK) or <code>failed</code>.</li>
+<li><code>publish_now</code> does steps 2–3 immediately, inline with the API request.</li>
+</ol>
+<p>Single process, single instance assumed. Running two servers on one database could publish a post twice.</p>
+<h2 id="dev-writing-a-real-connector">Writing a real connector</h2>
+<p>Implement <code>Connector</code> in <code>lib/connectors.ts</code> and register it:</p>
+<pre><code class="language-ts">import fs from &quot;node:fs&quot;;
+const bluesky: Connector = {
+  async publish(account, post) {
+    // account.handle, post.content (this network&#39;s text)
+    // post.type    = format key: &#39;reel&#39; | &#39;story&#39; | &#39;short&#39; | &#39;thread&#39; | &#39;poll&#39; | &#39;document&#39; | &#39;pin&#39; | …
+    // post.options = the format&#39;s fields: { title, visibility, thread: [...], pollOptions: [...], board, link, … }
+    // post.media: [{id, kind:&#39;image&#39;|&#39;video&#39;, mime, name, size, alt, path}]  ← read bytes from path
+    const bytes = fs.readFileSync(post.media[0].path);
+    // …upload blobs, create the record, using credentials for this account…
+    return { externalId: &quot;&lt;id from the network&gt;&quot; };   // throw new Error(&quot;reason&quot;) to fail this account
+  },
+};
+const registry: Partial&lt;Record&lt;Network, Connector&gt;&gt; = { bluesky };
+</code></pre>
+<p>What a real integration still needs (not built):</p>
+<ul>
+<li><strong>Credentials</strong>: add columns to <code>accounts</code> (e.g. <code>access_token</code>, <code>refresh_token</code>, <code>expires_at</code>) and an OAuth/app-password flow on the Accounts page. Store secrets encrypted or at least with strict file permissions on <code>data/</code>.</li>
+<li><strong>Token refresh</strong> and error classification (retry vs. permanent failure).</li>
+<li><strong>Rate limits / retries</strong>: today a failed account stays <code>failed</code> until you retry manually.</li>
+<li>Platform specifics: video processing/polling (Instagram, LinkedIn), required app review for Meta/LinkedIn/X API access, alt text field mapping (<code>media[].alt</code>).
+Easiest to start with: Bluesky (app password) and Mastodon (access token) — no app review.</li>
+</ul>
+<h2 id="dev-adding-a-network-or-format">Adding a network or format</h2>
+<p>Everything is data in <code>NETWORKS</code> (<code>lib/networks.ts</code>): a network has <code>formats[]</code>; each format declares its media rule (min/max count, allowed kinds, sizes, mixing), text limit/label, and <code>fields[]</code> (type text/url/select/toggle/list/datetime/thumbnail). The composer&#39;s tabs, field inputs, preview, server validation, <code>/api/networks</code>, the MCP tool and the Connections page all derive from it — add an entry (and add its key to the <code>Network</code> union) and it appears everywhere. Then regenerate <code>docs/FORMATS.md</code> content if you want the doc to match. Platform limits change; verify against current platform docs.</p>
+<h2 id="dev-commands">Commands</h2>
+<pre><code class="language-bash">npm run dev      # dev server, hot reload
+npm run build    # production build
+npm run start    # production server
+npm run mcp      # run MCP server on stdio
+npx tsc --noEmit # type-check
+</code></pre>
+<h2 id="dev-known-limitations">Known limitations</h2>
+<ul>
+<li><strong>No authentication / multi-user.</strong> Anyone who can reach the port has full control. Binds to 127.0.0.1 by default.</li>
+<li><strong>Publishing is mocked.</strong> No OAuth, no real network calls.</li>
+<li>No analytics, inbox, competitor tracking, link-in-bio, reports, approvals, autolists, CSV bulk import, best-time-to-post (none of these are built yet).</li>
+<li>Media is shared across a post&#39;s targets (no per-network media sets), and one account takes one format per post.</li>
+<li>Formats/limits are approximations, not verified against each platform&#39;s current API.</li>
+<li>Rumble: no known public upload API, so a real connector may be hard.</li>
+<li>Video thumbnails come from the browser (first frame); files the browser can&#39;t decode show a blank preview but are stored and served normally.</li>
+<li>No transcoding/resizing: media is posted exactly as uploaded.</li>
+<li>No schema migrations; no automated tests.</li>
+<li>Next.js dev mode keeps a DB handle open across hot reloads (<code>globalThis.__db</code>); restart the server after schema changes.</li>
+<li>Timezone handling is browser-local; there is no per-account timezone or &quot;best time to post&quot; feature.</li>
+</ul>
+</section></main></body></html>

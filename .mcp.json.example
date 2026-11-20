@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "promocarter": {
+      "command": "node",
+      "args": ["/ABSOLUTE/PATH/TO/promocarter/mcp/server.mjs"],
+      "env": { "PROMOCARTER_URL": "http://localhost:3100" }
+    }
+  }
+}

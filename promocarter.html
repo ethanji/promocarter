@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PromoCarter</title>
+<style>
+:root{--bg:#f6f7f9;--panel:#fff;--ink:#16181d;--mute:#6b7280;--line:#e5e7eb;--brand:#4f46e5;--ok:#16a34a;--bad:#dc2626}
+@media(prefers-color-scheme:dark){:root{--bg:#0f1115;--panel:#181b21;--ink:#e8eaee;--mute:#9aa3b2;--line:#2a2f38;--brand:#818cf8}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;padding:20px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:28px;max-width:560px;width:100%}
+h1{margin:0 0 4px;color:var(--brand)}p{color:var(--mute)}code{background:var(--bg);padding:2px 6px;border-radius:5px;color:var(--ink)}
+.status{display:flex;align-items:center;gap:8px;margin:16px 0;font-weight:600}.dot{width:10px;height:10px;border-radius:99px;background:var(--mute)}
+.on .dot{background:var(--ok)}.off .dot{background:var(--bad)}
+.links{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+a.b{display:block;text-align:center;padding:12px;border-radius:10px;border:1px solid var(--line);color:var(--ink);text-decoration:none;font-weight:600}
+a.b.pri{background:var(--brand);border-color:var(--brand);color:#fff;grid-column:1/-1}
+.help{display:none;margin-top:14px;padding:12px;border-radius:10px;background:var(--bg);font-size:14px}.off~.help{display:block}
+.off~.links{opacity:.5}
+</style></head><body><div class="card">
+<h1>✈ PromoCarter</h1>
+<p>Scheduler, calendar, and image/video media library. The app runs as a local server; this page links to it.</p>
+<div class="status" id="st"><span class="dot"></span><span id="stt">Checking…</span></div>
+<div class="help">Start it in a terminal:<br><code>cd ~/Projects/promocarter &amp;&amp; ./start.sh prod</code><br>then reload this page.</div>
+<div class="links">
+  <a class="b pri" href="http://localhost:3100/">Open PromoCarter</a>
+  <a class="b" href="http://localhost:3100/media">Media library (upload)</a>
+  <a class="b" href="http://localhost:3100/compose">New post</a>
+  <a class="b" href="http://localhost:3100/accounts">Accounts</a>
+  <a class="b" href="docs/index.html">Documentation</a>
+</div></div>
+<script>
+fetch("http://localhost:3100/api/networks",{mode:"no-cors"}).then(()=>ok(true),()=>ok(false));
+function ok(v){const s=document.getElementById("st");s.className="status "+(v?"on":"off");document.getElementById("stt").textContent=v?"Running at localhost:3100":"Not running";}
+</script></body></html>
